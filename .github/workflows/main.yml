@@ -31,7 +31,13 @@ jobs:
           mkdir -p package/luci-app-argon-config
           # 这里假设 仓库根目录 就是 luci-app-argon-config 源码
           cp -r "$GITHUB_WORKSPACE"/* package/luci-app-argon-config/
-
+      - name: Prepare feeds
+        run: |
+          cd /tmp/openwrt-sdk
+          # 更新所有 feed（包括 luci）
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          
       - name: Configure & compile
         run: |
           cd /tmp/openwrt-sdk
