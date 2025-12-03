@@ -29,8 +29,9 @@ jobs:
       - name: Copy luci-app-argon-config into SDK
         run: |
           cd "$GITHUB_WORKSPACE/sdk/openwrt-sdk"
-          mkdir -p package
-          cp -r "$GITHUB_WORKSPACE/luci-app-argon-config" package/luci-app-argon-config
+          mkdir -p package/luci-app-argon-config
+          cp -r "$GITHUB_WORKSPACE"/* package/luci-app-argon-config/
+
 
       - name: Configure & compile
         run: |
