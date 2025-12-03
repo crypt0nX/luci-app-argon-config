@@ -34,10 +34,14 @@ jobs:
       - name: Prepare feeds
         run: |
           cd /tmp/openwrt-sdk
-          # 更新所有 feed（包括 luci）
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-          
+          # 确保 feeds.conf.default 里有 luci 源（先删掉已有的 luci 行，避免重复）
+          sed -i '/^src-git luci/d' feeds.conf.default
+          echo 'src-git luci https://github.com/openwrt/luci.git;openwrt-24.10' >> feeds.conf.default
+
+          # 更新并安装 luci feed
+          ./scripts/feeds update luci
+          ./scripts/feeds install luci-base luci-compat
+
       - name: Configure & compile
         run: |
           cd /tmp/openwrt-sdk
