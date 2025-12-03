@@ -20,30 +20,31 @@ jobs:
 
       - name: Download OpenWrt SDK
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/sdk"
-          cd "$GITHUB_WORKSPACE/sdk"
+          cd /tmp
           wget https://downloads.openwrt.org/releases/24.10.4/targets/x86/64/openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst
           tar -I zstd -xf openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst
           mv openwrt-sdk-24.10.4-x86-64_gcc-13.3.0_musl.Linux-x86_64 openwrt-sdk
 
       - name: Copy luci-app-argon-config into SDK
         run: |
-          cd "$GITHUB_WORKSPACE/sdk/openwrt-sdk"
+          cd /tmp/openwrt-sdk
           mkdir -p package/luci-app-argon-config
+          # 这里假设 仓库根目录 就是 luci-app-argon-config 源码
           cp -r "$GITHUB_WORKSPACE"/* package/luci-app-argon-config/
-
 
       - name: Configure & compile
         run: |
-          cd "$GITHUB_WORKSPACE/sdk/openwrt-sdk"
+          cd /tmp/openwrt-sdk
           make defconfig
           make package/luci-app-argon-config/compile V=s
 
       - name: Collect ipk
         run: |
-          cd "$GITHUB_WORKSPACE/sdk/openwrt-sdk"
+          cd /tmp/openwrt-sdk
           mkdir -p "$GITHUB_WORKSPACE/ipk-out"
+          # 主包
           find bin/ -name "luci-app-argon-config_*.ipk" -exec cp {} "$GITHUB_WORKSPACE/ipk-out/" \;
+          # 中文 i18n（如果生成的话）
           find bin/ -name "luci-i18n-argon-config-zh-cn_*.ipk" -exec cp {} "$GITHUB_WORKSPACE/ipk-out/" \;
 
       - name: Upload artifact
